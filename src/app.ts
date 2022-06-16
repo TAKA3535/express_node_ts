@@ -5,6 +5,8 @@ import { AddressInfo } from "net";
 import * as dotenv from "dotenv";
 
 async function main() {
+  //.envファイルの読み込み
+  dotenv.config();
   const { PORT } = process.env;
 
   const app: Express = express();
