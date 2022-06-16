@@ -2,9 +2,10 @@
 import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { AddressInfo } from "net";
+import * as dotenv from "dotenv";
 
 async function main() {
-  const PORT = "4000";
+  const { PORT } = process.env;
 
   const app: Express = express();
   app.use(express.json());
