@@ -29,7 +29,7 @@ async function main() {
     console.log("Node.js is listening to PORT:" + address.port);
   });
 
-  const connection = await mysql.createConnection({
+  const connection: Connection = await mysql.createConnection({
     host: MYSQL_HOST as string,
     port: parseInt(MYSQL_PORT as string),
     user: MYSQL_USER as string,
