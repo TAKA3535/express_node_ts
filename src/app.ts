@@ -5,6 +5,9 @@ import { AddressInfo } from "net";
 import * as dotenv from "dotenv";
 import mysql, { Connection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { Todo } from "./models/todo";
+import { TodoRepository } from "./repositories/todoRepository";
+import { TodoService } from "./services/todoService";
+import { TodoController } from "./controllers/todoController";
 
 async function main() {
   //.envファイルの読み込み
@@ -37,11 +40,10 @@ async function main() {
     database: MYSQL_DB as string,
   });
 
-  app.get("/api/todos", async (req: express.Request, res: express.Response) => {
-    const sql = "select * from todos";
-    const [rows] = await connection.execute<Todo[] & RowDataPacket[]>(sql);
-    res.json(rows);
-  });
+  const repository = new TodoRepository(connection);
+  const service = new TodoService(repository);
+  const controller = new TodoController(service);
+  app.use("/api/", controller.router);
 }
 
 main();
