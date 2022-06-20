@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { TodoService } from "../services/todoService";
+import { SqlError } from "../utils/error";
 
 export class TodoController {
   private todoService: TodoService;
@@ -11,7 +12,12 @@ export class TodoController {
 
     this.router.get("/todos/", async (req: Request, res: Response) => {
       const result = await this.todoService.findAll();
-      res.json(result);
+
+      if (result instanceof SqlError) {
+        res.status(500).json(result.message);
+      } else {
+        res.status(200).json(result);
+      }
     });
   }
 }
