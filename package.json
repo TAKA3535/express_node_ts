@@ -1,5 +1,5 @@
 {
-  "name": "tiffin",
+  "name": "todo_lesson",
   "version": "3.0.0",
   "description": "express/nodejs(typescript)",
   "main": "app.ts",

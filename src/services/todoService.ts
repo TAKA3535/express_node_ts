@@ -1,3 +1,4 @@
+import { Todo } from "../models/todo";
 import { TodoRepository } from "../repositories/todoRepository";
 
 export class TodoService {
@@ -7,7 +8,7 @@ export class TodoService {
     this.todoRepository = todoRepository;
   }
 
-  public async findAll() {
+  public async findAll(): Promise<Todo[] | Error> {
     const result = await this.todoRepository.findAll();
     return result;
   }

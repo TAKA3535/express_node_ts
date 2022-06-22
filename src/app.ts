@@ -1,10 +1,9 @@
 //使うライブラリの宣言
-import express, { Express, Request, Response, NextFunction } from "express";
+import express, { Express } from "express";
 import cors from "cors";
 import { AddressInfo } from "net";
 import * as dotenv from "dotenv";
-import mysql, { Connection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { Todo } from "./models/todo";
+import mysql, { Connection } from "mysql2/promise";
 import { TodoRepository } from "./repositories/todoRepository";
 import { TodoService } from "./services/todoService";
 import { TodoController } from "./controllers/todoController";

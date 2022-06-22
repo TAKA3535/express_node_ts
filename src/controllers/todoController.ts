@@ -10,14 +10,13 @@ export class TodoController {
     this.todoService = todoService;
     this.router = Router();
 
-    this.router.get("/todos/", async (req: Request, res: Response) => {
+    this.router.get("/todos", async (req: Request, res: Response) => {
       const result = await this.todoService.findAll();
-
       if (result instanceof SqlError) {
         res.status(500).json(result.message);
-      } else {
-        res.status(200).json(result);
+        return;
       }
+      res.status(200).json(result);
     });
   }
 }
