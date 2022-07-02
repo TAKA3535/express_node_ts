@@ -1,10 +1,12 @@
 import { Todo } from "../models/todo";
+import { ITodoRepository } from "../repositories/interface";
 import { TodoRepository } from "../repositories/todoRepository";
+import { ITodoService } from "./interface";
 
-export class TodoService {
-  private todoRepository: TodoRepository;
+export class TodoService implements ITodoService {
+  private todoRepository: ITodoRepository;
 
-  constructor(todoRepository: TodoRepository) {
+  constructor(todoRepository: ITodoRepository) {
     this.todoRepository = todoRepository;
   }
 
