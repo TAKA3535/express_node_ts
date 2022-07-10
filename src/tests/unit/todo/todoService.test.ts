@@ -160,59 +160,80 @@ describe("TodoService", () => {
   });
 
   describe("create", () => {
+    //正常系テスト
     it("should return createdId 1", async () => {
+      // テストデータ準備
       const mockResult: number = 1;
 
+      //テスト用のリポジトリを作成
       let mockRepository = createMockRepository();
+      // テスト用にただ値を返すだけのcreateメソッドをリポジトリに実装
       mockRepository.create = jest.fn(() => new Promise<number | Error>((resolve) => resolve(mockResult)));
-      const service = new TodoService(mockRepository);
 
+      //実行
+      const service = new TodoService(mockRepository);
       const createTodo: Todo = {
         title: "title",
         description: "description",
       };
       const result = await service.create(createTodo);
 
+      //エラーだった場合はテスト失敗
       if (result instanceof Error) {
         throw new Error("Test failed because an error has occurred.");
       }
 
+      //取得できた値が準備したテストデータと一致するかどうか検証
       expect(result).toBe(mockResult);
     });
 
+    // 異常系テスト
     it("should return repository error", async () => {
+      // テストデータ準備
       const errMsg = "mock error";
       const mockResult: Error = new Error(errMsg);
 
+      // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
+      // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
       mockRepository.create = jest.fn(() => new Promise<number | Error>((resolve) => resolve(mockResult)));
-      const service = new TodoService(mockRepository);
 
+      // 実行
+      const service = new TodoService(mockRepository);
       const createTodo: Todo = {
         title: "title",
         description: "description",
       };
       const result = await service.create(createTodo);
 
+      // エラーが出なかったら
       if (!(result instanceof Error)) {
+        //テスト失敗のエラーを出す
         throw new Error("Test failed because no error occurred");
       }
 
+      // 返却されたメッセージが、テストデータ準備で作成したメッセージと一致することを検証
       expect(result.message).toBe(mockResult.message);
     });
   });
 
   describe("update", () => {
+    // 正常系テスト
     it("should return no errors", async () => {
+      // テストデータ準備
       const mockGetByIdResult: Todo = {
         title: "title",
         description: "description",
       };
 
+      // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
+      // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
       mockRepository.getById = jest.fn(() => new Promise<Todo | Error>((resolve) => resolve(mockGetByIdResult)));
+
       mockRepository.update = jest.fn(() => new Promise<void | Error>((resolve) => resolve()));
 
+      // 実行
       const service = new TodoService(mockRepository);
 
       const updateTodo: Todo = {
@@ -221,16 +242,21 @@ describe("TodoService", () => {
       };
       const result = await service.update(1, updateTodo);
 
+      //取得できた値が準備したテストデータと一致するかどうか検証
       expect(result instanceof Error).toBeFalsy();
     });
 
+    // 異常系テスト
     it("should return notfound error", async () => {
       const mockGetByIdResult: Error = new NotFoundDataError("mock notfound error");
 
+      // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
+      // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
       mockRepository.getById = jest.fn(() => new Promise<Todo | Error>((resolve) => resolve(mockGetByIdResult)));
       mockRepository.update = jest.fn(() => new Promise<void | Error>((resolve) => resolve()));
 
+      // エラーが出なかったら
       const service = new TodoService(mockRepository);
 
       const updateTodo: Todo = {
@@ -240,11 +266,13 @@ describe("TodoService", () => {
       };
       const result = await service.update(1, updateTodo);
 
+      // エラーが出なかったら
       if (!(result instanceof Error)) {
         throw new Error("Test failed because no error occurred");
       }
 
       expect(result instanceof NotFoundDataError).toBeTruthy();
+      // 返却されたメッセージが、テストデータ準備で作成したメッセージと一致することを検証
       expect(result.message).toBe(mockGetByIdResult.message);
     });
 
@@ -278,30 +306,43 @@ describe("TodoService", () => {
   });
 
   describe("delete", () => {
+    // 正常系テスト
     it("should return no errors", async () => {
+      // テスト用のリポジトリを生成
       let mockRepository = createMockRepository();
-      mockRepository.delete = jest.fn(() => new Promise<void | Error>((resolve) => resolve()));
-      const service = new TodoService(mockRepository);
 
+      mockRepository.delete = jest.fn(() => new Promise<void | Error>((resolve) => resolve()));
+
+      //実行
+      const service = new TodoService(mockRepository);
       const result = await service.delete(1);
 
+      //取得できた値が準備したテストデータと一致するかどうか検証
       expect(result instanceof Error).toBeFalsy;
     });
 
+    // 異常系テスト
     it("should return repository error", async () => {
+      // テストデータ準備
       const errMsg = "mock error";
       const mockResult: Error = new Error(errMsg);
 
+      // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
-      mockRepository.delete = jest.fn(() => new Promise<void | Error>((resolve) => resolve(mockResult)));
-      const service = new TodoService(mockRepository);
 
+      mockRepository.delete = jest.fn(() => new Promise<void | Error>((resolve) => resolve(mockResult)));
+
+      // 実行
+      const service = new TodoService(mockRepository);
       const result = await service.delete(1);
 
+      // エラーが出なかったら
       if (!(result instanceof Error)) {
+        //テスト失敗のエラーを出す
         throw new Error("Test failed because no error occurred");
       }
 
+      // 返却されたメッセージが、テストデータ準備で作成したメッセージと一致することを検証
       expect(result.message).toBe(mockResult.message);
     });
   });
