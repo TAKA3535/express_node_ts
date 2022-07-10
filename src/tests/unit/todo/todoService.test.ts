@@ -276,21 +276,26 @@ describe("TodoService", () => {
       expect(result.message).toBe(mockGetByIdResult.message);
     });
 
+    // 異常系テスト
     it("should return repository error", async () => {
       const mockGetByIdResult: Todo = {
         id: 1,
         title: "title",
         description: "description",
       };
+
+      // テストデータ準備
       const errMsg = "mock error";
       const mockUpdateResult: Error = new Error(errMsg);
 
+      // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
+      // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
       mockRepository.getById = jest.fn(() => new Promise<Todo | Error>((resolve) => resolve(mockGetByIdResult)));
       mockRepository.update = jest.fn(() => new Promise<void | Error>((resolve) => resolve(mockUpdateResult)));
 
+      // 実行
       const service = new TodoService(mockRepository);
-
       const updateTodo: Todo = {
         id: 1,
         title: "title",
@@ -298,9 +303,12 @@ describe("TodoService", () => {
       };
       const result = await service.update(1, updateTodo);
 
+      // エラーが出なかったら
       if (!(result instanceof Error)) {
+        //テスト失敗のエラーを出す
         throw new Error("Test failed because no error occurred");
       }
+      // 返却されたメッセージが、テストデータ準備で作成したメッセージと一致することを検証
       expect(result.message).toBe(mockUpdateResult.message);
     });
   });
