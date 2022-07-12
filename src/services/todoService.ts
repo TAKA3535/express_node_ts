@@ -6,12 +6,15 @@ import { ITodoService } from "./interface";
 export class TodoService implements ITodoService {
   private todoRepository: ITodoRepository;
 
+  //new(インタンス化)する時に何が必要で何をするか
   constructor(todoRepository: ITodoRepository) {
     this.todoRepository = todoRepository;
   }
 
   public async findAll(): Promise<Todo[] | Error> {
+    //repositoryに命令してfindallしてる、それをresultで受け取っている
     const result = await this.todoRepository.findAll();
+    //受け取ったresultを返却してる
     return result;
   }
 

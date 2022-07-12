@@ -39,6 +39,7 @@ async function main() {
     database: MYSQL_DB as string,
   });
 
+  //todoRepositoryの呼出
   const repository = new TodoRepository(connection);
   const service = new TodoService(repository);
   const controller = new TodoController(service);

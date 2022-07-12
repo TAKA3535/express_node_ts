@@ -46,9 +46,10 @@ describe("TodoService", () => {
   describe("findAll", () => {
     //正常系テスト
     it("should return 5 todo", async () => {
-      // サンプルでTodoを5個作成
+      // 前準備としてサンプルでTodoを5個作成
       const mockResult: Todo[] = createMockTodoList(5);
 
+      //命令のなる対象となるダミーリポジトリを作成
       // テスト用のリポジトリを生成
       let mockRepository = createMockRepository();
       // テスト用にただ値を返すだけのfindAllメソッドをリポジトリに実装
@@ -56,7 +57,7 @@ describe("TodoService", () => {
 
       // テスト対象のServiceを生成
       const service = new TodoService(mockRepository);
-      // 実行
+      // 実行、サービス層のfindaAllを実行したら結果が返るようにする
       const result = await service.findAll();
 
       // エラー型かどうかチェック
@@ -68,9 +69,9 @@ describe("TodoService", () => {
       // 返却値が5個であることを検証
       expect(result.length).toBe(5);
 
-      // 返却値を一件ずつ検証
+      // 返却値(5件の中身)を一件ずつ検証
       for (let index = 0; index < result.length; index++) {
-        // idの検証
+        // idの検証(モックリザルト(ダミーで作った5件のデータ)のidと実際のリザルトのidが一致しているかどうか)
         expect(mockResult[index].id).toBe(result[index].id);
         // titleの検証
         expect(mockResult[index].title).toBe(result[index].title);
@@ -146,6 +147,7 @@ describe("TodoService", () => {
 
       // 実行
       const service = new TodoService(mockRepository);
+
       const result = await service.getById(1);
 
       // エラーが出なかったら
@@ -160,14 +162,14 @@ describe("TodoService", () => {
   });
 
   describe("create", () => {
-    //正常系テスト
+    //正常系テスト、1つ作成して返すべき
     it("should return createdId 1", async () => {
       // テストデータ準備
       const mockResult: number = 1;
 
-      //テスト用のリポジトリを作成
+      //テスト用のダミーリポジトリを作成
       let mockRepository = createMockRepository();
-      // テスト用にただ値を返すだけのcreateメソッドをリポジトリに実装
+      // ダミーのリポジトリーのcreate作成(リポジトリーのcreateがないとserviceのcreateのテストができない)
       mockRepository.create = jest.fn(() => new Promise<number | Error>((resolve) => resolve(mockResult)));
 
       //実行
@@ -176,6 +178,7 @@ describe("TodoService", () => {
         title: "title",
         description: "description",
       };
+      // 実行、serviceのcreateを実行したら結果が返るようにする
       const result = await service.create(createTodo);
 
       //エラーだった場合はテスト失敗
@@ -189,13 +192,14 @@ describe("TodoService", () => {
 
     // 異常系テスト
     it("should return repository error", async () => {
-      // テストデータ準備
+      // エラー文を生成
       const errMsg = "mock error";
+      // 期待するエラーを作成           s
       const mockResult: Error = new Error(errMsg);
 
       // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
-      // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
+      // ダミーのリポジトリーのcreate作成(リポジトリーのcreateがないとserviceのcreateのテストができない)
       mockRepository.create = jest.fn(() => new Promise<number | Error>((resolve) => resolve(mockResult)));
 
       // 実行
@@ -204,11 +208,12 @@ describe("TodoService", () => {
         title: "title",
         description: "description",
       };
+      // 実行、serviceのcreateを実行したら結果が返るようにする
       const result = await service.create(createTodo);
 
-      // エラーが出なかったら
+      // エラー型かどうかチェック
       if (!(result instanceof Error)) {
-        //テスト失敗のエラーを出す
+        //エラーじゃなかったらテスト失敗
         throw new Error("Test failed because no error occurred");
       }
 
@@ -218,7 +223,7 @@ describe("TodoService", () => {
   });
 
   describe("update", () => {
-    // 正常系テスト
+    // 正常系テスト,エラーを出さない
     it("should return no errors", async () => {
       // テストデータ準備
       const mockGetByIdResult: Todo = {
@@ -228,18 +233,18 @@ describe("TodoService", () => {
 
       // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
-      // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
+      // ダミーのリポジトリーのgetById作成、updateするTodoの読み込み
       mockRepository.getById = jest.fn(() => new Promise<Todo | Error>((resolve) => resolve(mockGetByIdResult)));
-
+      // ダミーのリポジトリーのupdate作成(リポジトリーのcreateがないとserviceのcreateのテストができない)
       mockRepository.update = jest.fn(() => new Promise<void | Error>((resolve) => resolve()));
 
       // 実行
       const service = new TodoService(mockRepository);
-
       const updateTodo: Todo = {
         title: "title",
         description: "description",
       };
+      // 実行、サービス層のupdate実行したら結果が返るようにする
       const result = await service.update(1, updateTodo);
 
       //取得できた値が準備したテストデータと一致するかどうか検証
@@ -248,26 +253,30 @@ describe("TodoService", () => {
 
     // 異常系テスト
     it("should return notfound error", async () => {
+      // 期待するエラーを作成
       const mockGetByIdResult: Error = new NotFoundDataError("mock notfound error");
 
       // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
-      // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
+      // ダミーのリポジトリーのgetById作成、updateするTodoの読み込み
       mockRepository.getById = jest.fn(() => new Promise<Todo | Error>((resolve) => resolve(mockGetByIdResult)));
+      // ダミーのリポジトリーのupdate作成(リポジトリーのcreateがないとserviceのcreateのテストができない)
       mockRepository.update = jest.fn(() => new Promise<void | Error>((resolve) => resolve()));
 
       // エラーが出なかったら
       const service = new TodoService(mockRepository);
-
+      // テストデータ準備
       const updateTodo: Todo = {
         id: 1,
         title: "title",
         description: "description",
       };
+      // 実行、サービス層のupdate実行したら結果が返るようにする
       const result = await service.update(1, updateTodo);
 
-      // エラーが出なかったら
+      // エラーじゃなかったらテスト失敗
       if (!(result instanceof Error)) {
+        //テスト失敗のエラーを出す
         throw new Error("Test failed because no error occurred");
       }
 
@@ -278,20 +287,23 @@ describe("TodoService", () => {
 
     // 異常系テスト
     it("should return repository error", async () => {
+      // テストデータ準備
       const mockGetByIdResult: Todo = {
         id: 1,
         title: "title",
         description: "description",
       };
 
-      // テストデータ準備
+      // エラー文を生成
       const errMsg = "mock error";
+      // 期待するエラーを作成
       const mockUpdateResult: Error = new Error(errMsg);
 
       // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
       // テスト用にただ値を返すだけのgetByIdをリポジトリに実装
       mockRepository.getById = jest.fn(() => new Promise<Todo | Error>((resolve) => resolve(mockGetByIdResult)));
+      // ダミーのリポジトリーのupdate作成(リポジトリーのcreateがないとserviceのcreateのテストができない)
       mockRepository.update = jest.fn(() => new Promise<void | Error>((resolve) => resolve(mockUpdateResult)));
 
       // 実行
@@ -301,9 +313,10 @@ describe("TodoService", () => {
         title: "title",
         description: "description",
       };
+      // 実行、サービス層のupdate実行したら結果が返るようにする
       const result = await service.update(1, updateTodo);
 
-      // エラーが出なかったら
+      // エラーじゃなかったらテスト失敗
       if (!(result instanceof Error)) {
         //テスト失敗のエラーを出す
         throw new Error("Test failed because no error occurred");
@@ -318,11 +331,12 @@ describe("TodoService", () => {
     it("should return no errors", async () => {
       // テスト用のリポジトリを生成
       let mockRepository = createMockRepository();
-
+      //ダミーのリポジトリーのdelete作成(リポジトリーのdeleteがないとserviceのdeleteのテストができない)
       mockRepository.delete = jest.fn(() => new Promise<void | Error>((resolve) => resolve()));
 
       //実行
       const service = new TodoService(mockRepository);
+      // 実行、サービス層のdeleteを実行したら結果が返るようにする
       const result = await service.delete(1);
 
       //取得できた値が準備したテストデータと一致するかどうか検証
@@ -331,20 +345,22 @@ describe("TodoService", () => {
 
     // 異常系テスト
     it("should return repository error", async () => {
-      // テストデータ準備
+      // エラー文を生成
       const errMsg = "mock error";
+      // 期待するエラーを作成
       const mockResult: Error = new Error(errMsg);
 
       // テスト用のリポジトリ生成
       let mockRepository = createMockRepository();
-
+      //ダミーのリポジトリーのdelete作成(リポジトリーのdeleteがないとserviceのdeleteのテストができない)
       mockRepository.delete = jest.fn(() => new Promise<void | Error>((resolve) => resolve(mockResult)));
 
       // 実行
       const service = new TodoService(mockRepository);
+      // 実行、サービス層のdeleteを実行したら結果が返るようにする
       const result = await service.delete(1);
 
-      // エラーが出なかったら
+      // エラーじゃなかったらテスト失敗
       if (!(result instanceof Error)) {
         //テスト失敗のエラーを出す
         throw new Error("Test failed because no error occurred");
