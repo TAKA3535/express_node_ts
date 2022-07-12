@@ -23,6 +23,7 @@ export class TodoRepository {
     try {
       const sql = "select * from todos where id = ?";
       const [rows] = await this.connection.execute<Todo & RowDataPacket[]>(sql, [id]);
+      //1件も返ってこない
       if (rows.length === 0) {
         return new NotFoundDataError(`not exists target todo`);
       }
